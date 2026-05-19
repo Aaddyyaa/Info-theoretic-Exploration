@@ -91,34 +91,6 @@ git clone https://github.com/Aaddyyaa/Info-theoretic-Exploration.git
 cd Info-theoretic-Exploration
 ```
 
-Install dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
----
-
-## Running the Project
-
-Train the agent:
-
-```bash
-python train.py
-```
-
-Run evaluation:
-
-```bash
-python evaluate.py
-```
-
-Launch notebooks:
-
-```bash
-jupyter notebook
-```
-
 ---
 
 ## Results
