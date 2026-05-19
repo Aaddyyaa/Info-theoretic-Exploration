@@ -1,84 +1,152 @@
 # Info-Theoretic Exploration for Reinforcement Learning
 
-An implementation and study of **information-theoretic exploration strategies** in Reinforcement Learning (RL), focused on improving agent exploration efficiency beyond traditional reward-driven methods.
+An implementation of **information-theoretic exploration techniques** in Reinforcement Learning (RL), designed to improve how agents explore environments by using entropy and uncertainty-driven decision making.
 
 ---
 
-## Overview
+## Project Overview
 
-Traditional reinforcement learning methods often struggle with sparse rewards and inefficient exploration. This project investigates how **information theory** can guide exploration by encouraging agents to seek informative states rather than purely reward-maximizing behavior.
+Traditional reinforcement learning algorithms often rely on random exploration strategies such as ε-greedy policies, which can become inefficient in sparse or complex environments.
 
-The project explores concepts such as:
+This project introduces an **information-theoretic exploration framework** where the agent is encouraged to explore states that maximize information gain and uncertainty reduction.
 
-- Intrinsic motivation
-- Entropy maximization
-- Information gain
-- Exploration–exploitation tradeoff
-- Curiosity-driven learning
+The system demonstrates how entropy-based exploration can lead to:
+- Better state-space coverage
+- Faster learning
+- Improved adaptability
+- More efficient exploration behavior
 
-The implementation demonstrates how information-theoretic objectives can improve learning efficiency in complex environments.
+---
+
+## Repository Structure
+
+```bash
+Info-theoretic-Exploration/
+│── __pycache__/             # Python cache files
+│── outputs/                 # Generated plots and outputs
+│── LICENSE
+│── README.md
+│── entropy_utils.py         # Entropy and information-theoretic calculations
+│── environment.py           # Environment setup and simulation
+│── explorer.py              # Exploration agent implementation
+│── main.py                  # Main execution script
+│── obstacle_map.png         # Environment/obstacle visualization
+│── visualization.py         # Plotting and visualization utilities
+```
+
+---
+
+## Core Concept
+
+The project uses entropy as a measure of uncertainty to guide exploration.
+
+The exploration objective can be represented as:
+
+\[
+\text{Objective} = \text{Reward} + \beta \times \text{Entropy Gain}
+\]
+
+Where:
+
+- Reward → external environment reward
+- Entropy Gain → information gained from exploring uncertain states
+- β → exploration weighting parameter
+
+This allows the agent to prioritize learning-rich states rather than only reward-rich states.
+
+---
+
+## File Descriptions
+
+### `main.py`
+Main entry point for running the simulation and experiments.
+
+Responsibilities:
+- Initializes the environment
+- Creates the exploration agent
+- Runs training/exploration loops
+- Generates outputs and visualizations
+
+Run using:
+
+```bash
+python main.py
+```
+
+---
+
+### `environment.py`
+Defines the environment in which the agent operates.
+
+Features may include:
+- Grid/world generation
+- State transitions
+- Obstacles and navigation logic
+- Reward structure
+
+---
+
+### `explorer.py`
+Implements the exploration agent and decision-making logic.
+
+Possible functionalities:
+- Action selection
+- Entropy-guided exploration
+- State visitation tracking
+- Policy updates
+
+---
+
+### `entropy_utils.py`
+Contains mathematical utilities for entropy and information-theoretic computations.
+
+Includes concepts such as:
+- Shannon entropy
+- Probability distributions
+- Uncertainty estimation
+- Information gain calculations
+
+Example entropy equation:
+
+:contentReference[oaicite:0]{index=0}
+
+Where:
+- \(H(X)\) = entropy
+- \(p(x_i)\) = probability of state \(x_i\)
+
+Higher entropy indicates greater uncertainty.
+
+---
+
+### `visualization.py`
+Handles plotting and visual analysis of exploration behavior.
+
+Possible visualizations:
+- Agent trajectories
+- Heatmaps of visited states
+- Entropy maps
+- Exploration efficiency graphs
+
+---
+
+### `obstacle_map.png`
+A visual representation of the environment containing obstacles and navigable regions.
+
+Used for:
+- Environment visualization
+- Path analysis
+- Exploration mapping
 
 ---
 
 ## Features
 
-- Information-theoretic exploration framework
-- Reinforcement learning environment integration
-- Entropy-based exploration mechanisms
-- Visualization of agent behavior and learning progress
-- Comparative analysis with standard exploration strategies
-- Modular and extensible code structure
-
----
-
-## Project Structure
-
-```bash
-Info-theoretic-Exploration/
-│── environments/        # RL environments
-│── agents/              # Agent implementations
-│── models/              # Neural network architectures
-│── utils/               # Helper functions and visualization tools
-│── training/            # Training scripts
-│── notebooks/           # Experiment notebooks and analysis
-│── results/             # Plots, logs, and evaluation outputs
-│── requirements.txt
-│── README.md
-```
-
----
-
-## Core Idea
-
-The key idea behind this project is to use **information-theoretic measures** to encourage agents to explore states that maximize learning potential.
-
-Instead of only optimizing external rewards:
-
-\[
-\text{Objective} = \text{Reward} + \beta \times \text{Information Gain}
-\]
-
-where:
-
-- Reward → environment reward
-- Information Gain → novelty or uncertainty reduction
-- β → exploration weighting factor
-
-This helps agents:
-- Avoid local optima
-- Explore unseen states efficiently
-- Learn better policies in sparse reward settings
-
----
-
-## Technologies Used
-
-- Python
-- PyTorch
-- NumPy
-- OpenAI Gym / Gymnasium
-- Matplotlib
-- Reinforcement Learning algorithms
+- Entropy-driven exploration strategy
+- Modular RL environment setup
+- Information gain calculations
+- Environment visualization tools
+- Obstacle-based navigation environment
+- Extensible architecture for future RL experiments
 
 ---
 
@@ -91,55 +159,51 @@ git clone https://github.com/Aaddyyaa/Info-theoretic-Exploration.git
 cd Info-theoretic-Exploration
 ```
 
----
+Install dependencies:
 
-## Results
-
-The experiments demonstrate that information-theoretic exploration strategies can:
-
-- Improve exploration efficiency
-- Increase state-space coverage
-- Accelerate policy learning
-- Perform better in sparse reward environments
-
-Training curves and visualizations are included in the `results/` directory.
+```bash
+pip install -r requirements.txt
+```
 
 ---
 
-## Future Improvements
+## Running the Project
 
-- Integration with PPO/SAC/DDPG
-- Advanced curiosity-driven exploration
-- Multi-agent exploration settings
-- Better uncertainty estimation methods
-- Real-world robotics applications
+Execute the main simulation:
+
+```bash
+python main.py
+```
+
+Outputs and visualizations will be generated inside the `outputs/` directory.
 
 ---
 
 ## Applications
 
-This work has applications in:
+This project has applications in:
 
 - Autonomous robotics
-- Navigation systems
-- Sparse reward RL tasks
-- Game AI
-- Adaptive decision-making systems
+- Intelligent navigation systems
+- Sparse reward reinforcement learning
+- Exploration-based AI systems
+- Adaptive path planning
 
 ---
 
-## References
+## Future Improvements
 
-- Shannon Information Theory
-- Curiosity-Driven Reinforcement Learning
-- Intrinsic Motivation in RL
-- Entropy Regularization Methods
+- Integration with Deep RL algorithms
+- Curiosity-driven exploration
+- PPO/DQN implementations
+- Multi-agent exploration systems
+- Real-time robotics deployment
 
 ---
 
 ## Author
 
-Developed by **Adya Gireesh Mokal**
+**Adya Gireesh Mokal**
 
 GitHub: https://github.com/Aaddyyaa
 
