@@ -1,214 +1,121 @@
-# Info-Theoretic Exploration for Reinforcement Learning
+# Adaptive Entropy-Guided Exploration
 
-An implementation of **information-theoretic exploration techniques** in Reinforcement Learning (RL), designed to improve how agents explore environments by using entropy and uncertainty-driven decision making.
+This project studies lightweight exploration strategies for obstacle-aware grid
+environments. It compares simple baselines against an adaptive entropy-guided
+count-based policy that reduces exploration pressure as map uncertainty falls.
 
----
+## Research Question
 
-## Project Overview
+Can an adaptive entropy-guided count-based policy cover obstacle-rich grid
+environments more efficiently than random walk, epsilon-greedy movement, and
+pure count-based exploration?
 
-Traditional reinforcement learning algorithms often rely on random exploration strategies such as ε-greedy policies, which can become inefficient in sparse or complex environments.
+## Novelty for a Student Research Paper
 
-This project introduces an **information-theoretic exploration framework** where the agent is encouraged to explore states that maximize information gain and uncertainty reduction.
+The proposed method uses a dynamic exploration coefficient:
 
-The system demonstrates how entropy-based exploration can lead to:
-- Better state-space coverage
-- Faster learning
-- Improved adaptability
-- More efficient exploration behavior
+```text
+score(s) = beta_t * uncertainty(s) + gamma * frontier(s) - lambda * revisit_count(s) + noise
+beta_t = beta_0 * H_t / H_0
+uncertainty(s) = 1 / (N(s) + 1)
+```
 
----
+Where:
+
+- `N(s)` is the visit count of candidate state `s`
+- `H_0` is the initial reachable-map entropy
+- `H_t` is the current reachable-map entropy
+- `beta_t` decays as the map becomes less uncertain
+- `frontier(s)` counts unvisited valid neighbors around candidate state `s`
+- Obstacles are excluded from entropy and coverage calculations
+
+This makes the method simple, reproducible, and suitable for controlled
+comparison in a student paper.
+
+## Compared Methods
+
+- `random_walk`: uniformly samples a valid neighboring state
+- `epsilon_greedy`: usually moves to the least-visited neighbor, sometimes random
+- `count_based`: uses only `1 / (N(s) + 1)` as a novelty bonus
+- `adaptive_entropy`: proposed method with entropy-scaled exploration pressure
+
+## Metrics
+
+The experiment runner records:
+
+- Coverage over time
+- Entropy reduction over time
+- Final coverage
+- Repeated visit ratio
+- Path length
+- Steps to 80% coverage
 
 ## Repository Structure
 
-```bash
-Info-theoretic-Exploration/
-│── __pycache__/             # Python cache files
-│── outputs/                 # Generated plots and outputs
-│── LICENSE
-│── README.md
-│── entropy_utils.py         # Entropy and information-theoretic calculations
-│── environment.py           # Environment setup and simulation
-│── explorer.py              # Exploration agent implementation
-│── main.py                  # Main execution script
-│── obstacle_map.png         # Environment/obstacle visualization
-│── visualization.py         # Plotting and visualization utilities
+```text
+.
+|-- environment.py        # Reproducible obstacle-aware grid world
+|-- entropy_utils.py      # Entropy, coverage, revisit metrics
+|-- explorer.py           # Baseline and proposed exploration agents
+|-- experiment_runner.py  # Multi-trial experiments and comparison plots
+|-- visualization.py      # Single-run visualization helpers
+|-- main.py               # CLI entry point
+|-- requirements.txt
+|-- outputs/
 ```
-
----
-
-## Core Concept
-
-The project uses entropy as a measure of uncertainty to guide exploration.
-
-The exploration objective can be represented as:
-
-\[
-\text{Objective} = \text{Reward} + \beta \times \text{Entropy Gain}
-\]
-
-Where:
-
-- Reward → external environment reward
-- Entropy Gain → information gained from exploring uncertain states
-- β → exploration weighting parameter
-
-This allows the agent to prioritize learning-rich states rather than only reward-rich states.
-
----
-
-## File Descriptions
-
-### `main.py`
-Main entry point for running the simulation and experiments.
-
-Responsibilities:
-- Initializes the environment
-- Creates the exploration agent
-- Runs training/exploration loops
-- Generates outputs and visualizations
-
-Run using:
-
-```bash
-python main.py
-```
-
----
-
-### `environment.py`
-Defines the environment in which the agent operates.
-
-Features may include:
-- Grid/world generation
-- State transitions
-- Obstacles and navigation logic
-- Reward structure
-
----
-
-### `explorer.py`
-Implements the exploration agent and decision-making logic.
-
-Possible functionalities:
-- Action selection
-- Entropy-guided exploration
-- State visitation tracking
-- Policy updates
-
----
-
-### `entropy_utils.py`
-Contains mathematical utilities for entropy and information-theoretic computations.
-
-Includes concepts such as:
-- Shannon entropy
-- Probability distributions
-- Uncertainty estimation
-- Information gain calculations
-
-Example entropy equation:
-
-:contentReference[oaicite:0]{index=0}
-
-Where:
-- \(H(X)\) = entropy
-- \(p(x_i)\) = probability of state \(x_i\)
-
-Higher entropy indicates greater uncertainty.
-
----
-
-### `visualization.py`
-Handles plotting and visual analysis of exploration behavior.
-
-Possible visualizations:
-- Agent trajectories
-- Heatmaps of visited states
-- Entropy maps
-- Exploration efficiency graphs
-
----
-
-### `obstacle_map.png`
-A visual representation of the environment containing obstacles and navigable regions.
-
-Used for:
-- Environment visualization
-- Path analysis
-- Exploration mapping
-
----
-
-## Features
-
-- Entropy-driven exploration strategy
-- Modular RL environment setup
-- Information gain calculations
-- Environment visualization tools
-- Obstacle-based navigation environment
-- Extensible architecture for future RL experiments
-
----
 
 ## Installation
-
-Clone the repository:
-
-```bash
-git clone https://github.com/Aaddyyaa/Info-theoretic-Exploration.git
-cd Info-theoretic-Exploration
-```
-
-Install dependencies:
 
 ```bash
 pip install -r requirements.txt
 ```
 
----
-
-## Running the Project
-
-Execute the main simulation:
+## Run the Visual Demo
 
 ```bash
-python main.py
+python main.py --mode demo --size 10 --obstacle-density 0.12 --steps 200
 ```
 
-Outputs and visualizations will be generated inside the `outputs/` directory.
+Outputs are written to `outputs/`.
 
----
+## Run Research Experiments
 
-## Applications
+For a quick smoke test:
 
-This project has applications in:
+```bash
+python main.py --mode experiments --steps 100 --trials 3
+```
 
-- Autonomous robotics
-- Intelligent navigation systems
-- Sparse reward reinforcement learning
-- Exploration-based AI systems
-- Adaptive path planning
+For the full student-paper experiment:
 
----
+```bash
+python main.py --mode experiments --steps 500 --trials 50
+```
 
-## Future Improvements
+Experiment outputs are written to `outputs/experiments/`:
 
-- Integration with Deep RL algorithms
-- Curiosity-driven exploration
-- PPO/DQN implementations
-- Multi-agent exploration systems
-- Real-time robotics deployment
+- `timeseries_metrics.csv`
+- `summary_metrics.csv`
+- `coverage_vs_time.png`
+- `entropy_reduction_vs_time.png`
+- `final_coverage_by_method.png`
+- `revisit_ratio_by_method.png`
 
----
+## Suggested Paper Claim
 
-## Author
+This work introduces an adaptive entropy-guided count-based exploration method
+for grid-world navigation. The method dynamically reduces intrinsic exploration
+pressure as reachable-map uncertainty decreases and is evaluated against common
+exploration baselines across randomized obstacle densities and grid sizes.
 
-**Adya Gireesh Mokal**
+## Related Work to Cite
 
-GitHub: https://github.com/Aaddyyaa
-
----
-
-## Repository
-
-https://github.com/Aaddyyaa/Info-theoretic-Exploration
+- Shannon, C. E. A Mathematical Theory of Communication.
+- Bellemare et al. Unifying Count-Based Exploration and Intrinsic Motivation.
+- Tang et al. #Exploration: A Study of Count-Based Exploration for Deep RL.
+- Houthooft et al. VIME: Variational Information Maximizing Exploration.
+- Pathak et al. Curiosity-driven Exploration by Self-supervised Prediction.
+- Burda et al. Exploration by Random Network Distillation.
+- Hazan et al. Provably Efficient Maximum Entropy Exploration.
+- Seo et al. State Entropy Maximization with Random Encoders.
+- Yamauchi. A Frontier-Based Approach for Autonomous Exploration.

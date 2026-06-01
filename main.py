@@ -1,40 +1,73 @@
+import argparse
+import os
+
+os.environ.setdefault("MPLCONFIGDIR", os.path.join(os.getcwd(), "outputs", ".matplotlib"))
+
+import matplotlib
+
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 from environment import GridWorld
-from explorer import EntropyExplorer
+from experiment_runner import run_experiments
+from explorer import AdaptiveEntropyExplorer
 from visualization import Visualizer
 
-# Environment
-env = GridWorld(size=10)
 
-# Robot
-robot = EntropyExplorer(env)
+def run_demo(size, obstacle_density, steps, seed):
+    env = GridWorld(size=size, obstacle_density=obstacle_density, seed=seed)
+    robot = AdaptiveEntropyExplorer(env, seed=seed)
+    visualizer = Visualizer(env)
 
-# Visualization
-visualizer = Visualizer(env)
+    visualizer.save_obstacle_map()
+    visualizer.save_before_exploration()
 
-# Initial visit
-env.visit((0, 0))
+    plt.figure(figsize=(8, 8))
 
-# Save initial maps
-visualizer.save_obstacle_map()
+    for _ in range(steps):
+        robot.step()
+        visualizer.show(robot)
 
-visualizer.save_before_exploration()
+    visualizer.save_after_exploration(robot)
+    visualizer.save_video()
+    visualizer.save_entropy_graph()
+    plt.show()
 
-# Main figure
-plt.figure(figsize=(8, 8))
 
-# Exploration loop
-for _ in range(200):
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="Run entropy-guided exploration demos or experiments."
+    )
+    parser.add_argument(
+        "--mode",
+        choices=["demo", "experiments"],
+        default="demo",
+        help="demo shows one run; experiments compares all methods.",
+    )
+    parser.add_argument("--size", type=int, default=10)
+    parser.add_argument("--obstacle-density", type=float, default=0.12)
+    parser.add_argument("--steps", type=int, default=200)
+    parser.add_argument("--seed", type=int, default=7)
+    parser.add_argument("--trials", type=int, default=50)
+    parser.add_argument("--output-dir", default="outputs/experiments")
+    return parser.parse_args()
 
-    robot.step()
 
-    visualizer.show(robot)
+if __name__ == "__main__":
+    args = parse_args()
 
-# Save final map
-visualizer.save_after_exploration(robot)
-
-# Save exploration video
-visualizer.save_video()
-visualizer.save_entropy_graph()
-plt.show()
+    if args.mode == "demo":
+        run_demo(
+            size=args.size,
+            obstacle_density=args.obstacle_density,
+            steps=args.steps,
+            seed=args.seed,
+        )
+    else:
+        run_experiments(
+            sizes=[10, 20, 30],
+            obstacle_densities=[0.10, 0.20, 0.30],
+            trials=args.trials,
+            steps=args.steps,
+            output_dir=args.output_dir,
+        )
